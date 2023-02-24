@@ -602,9 +602,9 @@ export class Tileset3D {
       }
     }
 
-    this.stats.get(TILES_IN_VIEW)!.count = this.selectedTiles.length;
-    this.stats.get(TILES_RENDERABLE)!.count = tilesRenderable;
-    this.stats.get(POINTS_COUNT)!.count = pointsRenderable;
+    this.stats.get(TILES_IN_VIEW).count = this.selectedTiles.length;
+    this.stats.get(TILES_RENDERABLE).count = tilesRenderable;
+    this.stats.get(POINTS_COUNT).count = pointsRenderable;
   }
 
   async _initializeTileSet(tilesetJson) {
@@ -729,7 +729,7 @@ export class Tileset3D {
 
       while (stack.length > 0) {
         const tile = stack.pop() as Tile3D;
-        this.stats.get(TILES_TOTAL)?.incrementCount();
+        this.stats.get(TILES_TOTAL).incrementCount();
         const children = tile.header.children || [];
         for (const childHeader of children) {
           const childTile = new Tile3D(this, childHeader, tile);
@@ -781,7 +781,7 @@ export class Tileset3D {
   }
 
   _onTileLoadError(tile, error) {
-    this.stats.get(TILES_LOAD_FAILED)!.incrementCount();
+    this.stats.get(TILES_LOAD_FAILED).incrementCount();
 
     const message = error.message || error.toString();
     const url = tile.url;
@@ -798,8 +798,8 @@ export class Tileset3D {
     if (this.type === TILESET_TYPE.I3S) {
       // We can't calculate tiles total in I3S in advance so we calculate it dynamically.
       const nodesInNodePages = this.tileset?.nodePagesTile?.nodesInNodePages || 0;
-      this.stats.get(TILES_TOTAL)?.reset();
-      this.stats.get(TILES_TOTAL)?.addCount(nodesInNodePages);
+      this.stats.get(TILES_TOTAL).reset();
+      this.stats.get(TILES_TOTAL).addCount(nodesInNodePages);
     }
 
     // add coordinateOrigin and modelMatrix to tile
@@ -846,12 +846,12 @@ export class Tileset3D {
 
   _onStartTileLoading() {
     this._pendingCount++;
-    this.stats.get(TILES_LOADING)?.incrementCount();
+    this.stats.get(TILES_LOADING).incrementCount();
   }
 
   _onEndTileLoading() {
     this._pendingCount--;
-    this.stats.get(TILES_LOADING)?.decrementCount();
+    this.stats.get(TILES_LOADING).decrementCount();
   }
 
   _addTileToCache(tile) {
@@ -859,20 +859,20 @@ export class Tileset3D {
   }
 
   _updateCacheStats(tile) {
-    this.stats.get(TILES_LOADED)?.incrementCount();
-    this.stats.get(TILES_IN_MEMORY)?.incrementCount();
+    this.stats.get(TILES_LOADED).incrementCount();
+    this.stats.get(TILES_IN_MEMORY).incrementCount();
 
     // Good enough? Just use the raw binary ArrayBuffer's byte length.
     this.gpuMemoryUsageInBytes += tile.content.byteLength || 0;
-    this.stats.get(TILES_GPU_MEMORY)!.count = this.gpuMemoryUsageInBytes;
+    this.stats.get(TILES_GPU_MEMORY).count = this.gpuMemoryUsageInBytes;
   }
 
   _unloadTile(tile) {
     this.gpuMemoryUsageInBytes -= (tile.content && tile.content.byteLength) || 0;
 
-    this.stats.get(TILES_IN_MEMORY)?.decrementCount();
-    this.stats.get(TILES_UNLOADED)?.incrementCount();
-    this.stats.get(TILES_GPU_MEMORY)!.count = this.gpuMemoryUsageInBytes;
+    this.stats.get(TILES_IN_MEMORY).decrementCount();
+    this.stats.get(TILES_UNLOADED).incrementCount();
+    this.stats.get(TILES_GPU_MEMORY).count = this.gpuMemoryUsageInBytes;
 
     this.options.onTileUnload(tile);
     tile.unloadContent();
